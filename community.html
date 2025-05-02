@@ -1,0 +1,2057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindCare Community | Peer Support & Discussion</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --primary-dark: #3a5a8a;
+            --primary-light: #e8f4ff;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--dark-color);
+            background-color: #f5f7fa;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            padding: 25px 0;
+            height: 100vh;
+            position: fixed;
+            box-shadow: var(--box-shadow);
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            transition: var(--transition);
+        }
+
+        .sidebar-header {
+            padding: 0 25px 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-header h2 {
+            color: #fff;
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar-header h2 i {
+            margin-right: 10px;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+            padding: 25px 0;
+        }
+
+        .sidebar-nav ul {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-nav a {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            padding: 12px 25px;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .sidebar-nav a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-nav a.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            font-weight: 600;
+        }
+
+        .sidebar-nav a.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background-color: #fff;
+        }
+
+        .sidebar-nav i {
+            margin-right: 12px;
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .sidebar-footer {
+            padding: 20px 25px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Hamburger Menu */
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+        }
+
+        .menu-toggle:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            flex: 1;
+            padding: 40px;
+            max-width: 1200px;
+            transition: var(--transition);
+        }
+
+        /* Header */
+        .community-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .community-header h1 {
+            color: var(--primary-color);
+            font-size: 32px;
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-dark);
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .user-name {
+            font-weight: 600;
+        }
+
+        .user-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 10px 0;
+            min-width: 200px;
+            z-index: 10;
+            display: none;
+        }
+
+        .user-dropdown a {
+            display: block;
+            padding: 10px 20px;
+            color: var(--dark-color);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .user-dropdown a:hover {
+            background-color: var(--primary-light);
+        }
+
+        .user-dropdown a i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .user-profile:hover .user-dropdown {
+            display: block;
+        }
+
+        /* Community Layout */
+        .community-layout {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 30px;
+        }
+
+        /* Discussion Forums */
+        .discussion-forums {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+        }
+
+        .forums-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .forums-header h2 {
+            color: var(--primary-color);
+            font-size: 22px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn i {
+            margin-right: 8px;
+        }
+
+        /* Forum Categories */
+        .forum-categories {
+            padding: 20px;
+        }
+
+        .category {
+            margin-bottom: 25px;
+        }
+
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .category-header h3 {
+            color: var(--primary-dark);
+            font-size: 18px;
+        }
+
+        .view-all {
+            color: var(--secondary-color);
+            font-size: 14px;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .view-all:hover {
+            color: var(--primary-color);
+        }
+
+        /* Forum Posts */
+        .forum-posts {
+            display: grid;
+            gap: 15px;
+        }
+
+        .forum-post {
+            display: grid;
+            grid-template-columns: 50px 1fr 100px;
+            gap: 15px;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            text-decoration: none;
+            color: inherit;
+            background-color: white;
+            border: 1px solid #eee;
+        }
+
+        .forum-post:hover {
+            background-color: var(--light-color);
+            transform: translateY(-2px);
+            box-shadow: var(--box-shadow);
+        }
+
+        .post-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-dark);
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .post-content h4 {
+            margin-bottom: 5px;
+            color: var(--dark-color);
+        }
+
+        .post-content p {
+            color: var(--secondary-color);
+            font-size: 14px;
+            display: -webkit-box;
+          
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .post-stats {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            font-size: 13px;
+            color: var(--secondary-color);
+        }
+
+        .post-stats span {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .post-stats i {
+            margin-right: 5px;
+            font-size: 12px;
+        }
+
+        /* Community Sidebar */
+        .community-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .sidebar-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        /* Online Users */
+        .online-users {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .user-bubble {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: inherit;
+            position: relative;
+        }
+
+        .user-bubble-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-dark);
+            font-weight: bold;
+            margin-bottom: 5px;
+            position: relative;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .user-bubble-avatar:hover {
+            transform: scale(1.1);
+        }
+
+        .user-bubble-avatar.online::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 10px;
+            height: 10px;
+            background-color: var(--success-color);
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        .user-bubble-name {
+            font-size: 12px;
+            color: var(--secondary-color);
+            text-align: center;
+            max-width: 60px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Quick Links */
+        .quick-links {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .quick-link {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: var(--border-radius);
+            color: var(--dark-color);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .quick-link:hover {
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        .quick-link i {
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+
+        /* Contact Form */
+        .contact-form {
+            display: grid;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .form-group label {
+            font-size: 14px;
+            color: var(--dark-color);
+            font-weight: 500;
+        }
+
+        .form-control {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.2);
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        /* Emergency Section */
+        .emergency-section {
+            background-color: #fff8f8;
+            border: 1px solid #ffdddd;
+            border-radius: var(--border-radius);
+            padding: 15px;
+        }
+
+        .emergency-section h3 {
+            color: var(--danger-color);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .emergency-section h3 i {
+            margin-right: 10px;
+        }
+
+        .emergency-btn {
+            background-color: var(--danger-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .emergency-btn i {
+            margin-right: 8px;
+        }
+
+        .emergency-btn:hover {
+            background-color: #c82333;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            color: var(--primary-color);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--secondary-color);
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            color: var(--dark-color);
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--success-color);
+            color: white;
+            padding: 15px 25px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1100;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast i {
+            font-size: 20px;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Quick Links Content Sections (hidden by default) */
+        .quick-link-content {
+            display: none;
+            padding: 20px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-top: 20px;
+        }
+
+        .quick-link-content.active {
+            display: block;
+        }
+
+        /* Chat Modal */
+        .chat-modal {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 350px;
+            max-height: 500px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            z-index: 1000;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            padding: 15px;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-header h3 {
+            font-size: 16px;
+        }
+
+        .chat-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .chat-body {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .chat-message {
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.4;
+            position: relative;
+        }
+
+        .message-in {
+            align-self: flex-start;
+            background-color: #f1f1f1;
+            color: var(--dark-color);
+            border-top-left-radius: 4px;
+        }
+
+        .message-out {
+            align-self: flex-end;
+            background-color: var(--primary-color);
+            color: white;
+            border-top-right-radius: 4px;
+        }
+
+        .message-time {
+            display: block;
+            font-size: 11px;
+            opacity: 0.7;
+            margin-top: 5px;
+            text-align: right;
+        }
+
+        .chat-input {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid #eee;
+            background-color: #f9f9f9;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .chat-send {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            font-size: 18px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+
+        .chat-send:hover {
+            color: var(--primary-dark);
+        }
+
+        .no-chat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            color: var(--secondary-color);
+        }
+
+        .no-chat i {
+            font-size: 40px;
+            margin-bottom: 10px;
+            color: var(--primary-light);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .community-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .community-sidebar {
+                grid-row: 1;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .menu-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 20px;
+            }
+            
+            .forum-post {
+                grid-template-columns: 40px 1fr;
+            }
+            
+            .post-stats {
+                grid-column: 1 / -1;
+                flex-direction: row;
+                justify-content: flex-start;
+                gap: 15px;
+                padding-top: 10px;
+                border-top: 1px solid #eee;
+                margin-top: 10px;
+            }
+            
+            .community-header h1 {
+                font-size: 28px;
+            }
+
+            .chat-modal {
+                width: 100%;
+                max-height: 70vh;
+                bottom: 0;
+                right: 0;
+                border-radius: var(--border-radius) var(--border-radius) 0 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .forums-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .modal-content {
+                max-height: 80vh;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- Sidebar Navigation -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2><i class="fas fa-brain"></i> MindCare</h2>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="quiz.html"><i class="fas fa-clipboard-list"></i> Mental Health Quiz</a></li>
+                <li><a href="chatbot.html"><i class="fas fa-robot"></i> AI Chatbot</a></li>
+                <li><a href="mood.html"><i class="fas fa-chart-line"></i> Mood Tracker</a></li>
+                <li><a href="community.html" class="active"><i class="fas fa-users"></i> Community</a></li>
+                <li><a href="consult.html"><i class="fas fa-user-md"></i> Professional Help</a></li>
+            </ul>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <p>© 2023 MindCare. All rights reserved.</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <div class="community-header">
+            <h1>Community Support</h1>
+            <div class="user-profile">
+                <div class="user-avatar">SJ</div>
+                <div class="user-name">Sarah Johnson</div>
+                <div class="user-dropdown">
+                    <a href="#"><i class="fas fa-user"></i> My Profile</a>
+                    <a href="#"><i class="fas fa-cog"></i> Settings</a>
+                    <a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="community-layout">
+            <div class="discussion-forums">
+                <div class="forums-header">
+                    <h2>Discussion Forums</h2>
+                    <button class="btn btn-primary" id="newPostBtn">
+                        <i class="fas fa-plus"></i> New Post
+                    </button>
+                </div>
+                
+                <div class="forum-categories">
+                    <div class="category">
+                        <div class="category-header">
+                            <h3>Anxiety Support</h3>
+                            <a href="#" class="view-all">View All</a>
+                        </div>
+                        
+                        <div class="forum-posts">
+                            <a href="#" class="forum-post">
+                                <div class="post-avatar">JD</div>
+                                <div class="post-content">
+                                    <h4>Coping with panic attacks at work</h4>
+                                    <p>I've been experiencing panic attacks during meetings. Any advice on quick coping mechanisms?</p>
+                                </div>
+                                <div class="post-stats">
+                                    <span><i class="fas fa-comment"></i> 14 replies</span>
+                                    <span><i class="fas fa-eye"></i> 128 views</span>
+                                    <span>2 hours ago</span>
+                                </div>
+                            </a>
+                            
+                            <a href="#" class="forum-post">
+                                <div class="post-avatar">AM</div>
+                                <div class="post-content">
+                                    <h4>Medication experiences with Lexapro</h4>
+                                    <p>Just started Lexapro for anxiety. Would love to hear others' experiences.</p>
+                                </div>
+                                <div class="post-stats">
+                                    <span><i class="fas fa-comment"></i> 23 replies</span>
+                                    <span><i class="fas fa-eye"></i> 210 views</span>
+                                    <span>1 day ago</span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="category">
+                        <div class="category-header">
+                            <h3>Depression Support</h3>
+                            <a href="#" class="view-all">View All</a>
+                        </div>
+                        
+                        <div class="forum-posts">
+                            <a href="#" class="forum-post">
+                                <div class="post-avatar">TS</div>
+                                <div class="post-content">
+                                    <h4>Finding motivation on difficult days</h4>
+                                    <p>What strategies do you use when even getting out of bed feels impossible?</p>
+                                </div>
+                                <div class="post-stats">
+                                    <span><i class="fas fa-comment"></i> 32 replies</span>
+                                    <span><i class="fas fa-eye"></i> 287 views</span>
+                                    <span>3 days ago</span>
+                                </div>
+                            </a>
+                            
+                            <a href="#" class="forum-post">
+                                <div class="post-avatar">RK</div>
+                                <div class="post-content">
+                                    <h4>Therapy techniques that helped you</h4>
+                                    <p>Looking for recommendations on therapy approaches for depression.</p>
+                                </div>
+                                <div class="post-stats">
+                                    <span><i class="fas fa-comment"></i> 18 replies</span>
+                                    <span><i class="fas fa-eye"></i> 156 views</span>
+                                    <span>5 days ago</span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="category">
+                        <div class="category-header">
+                            <h3>General Support</h3>
+                            <a href="#" class="view-all">View All</a>
+                        </div>
+                        
+                        <div class="forum-posts">
+                            <a href="#" class="forum-post">
+                                <div class="post-avatar">LP</div>
+                                <div class="post-content">
+                                    <h4>How to explain mental health to family</h4>
+                                    <p>Struggling to help my parents understand what I'm going through.</p>
+                                </div>
+                                <div class="post-stats">
+                                    <span><i class="fas fa-comment"></i> 27 replies</span>
+                                    <span><i class="fas fa-eye"></i> 198 views</span>
+                                    <span>1 week ago</span>
+                                </div>
+                            </a>
+                            
+                            <a href="#" class="forum-post">
+                                <div class="post-avatar">MG</div>
+                                <div class="post-content">
+                                    <h4>MindCare AI chatbot experiences</h4>
+                                    <p>How has the MindCare AI helped you with your mental health journey?</p>
+                                </div>
+                                <div class="post-stats">
+                                    <span><i class="fas fa-comment"></i> 42 replies</span>
+                                    <span><i class="fas fa-eye"></i> 324 views</span>
+                                    <span>2 weeks ago</span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="community-sidebar">
+                <div class="sidebar-card">
+                    <div class="card-header">Online Now</div>
+                    <div class="card-body">
+                        <div class="online-users" id="onlineUsers">
+                            <!-- Filled by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="sidebar-card">
+                    <div class="card-header">Quick Links</div>
+                    <div class="card-body">
+                        <div class="quick-links">
+                            <a href="#" class="quick-link" data-target="guidelines">
+                                <i class="fas fa-book"></i> Community Guidelines
+                            </a>
+                            <a href="#" class="quick-link" data-target="popular">
+                                <i class="fas fa-star"></i> Popular Discussions
+                            </a>
+                            <a href="#" class="quick-link" data-target="events">
+                                <i class="fas fa-calendar"></i> Upcoming Events
+                            </a>
+                            <a href="#" class="quick-link" data-target="faq">
+                                <i class="fas fa-question-circle"></i> FAQ
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Links Content Sections -->
+                <div class="quick-link-content" id="guidelines">
+                    <h3>Community Guidelines</h3>
+                    <p>Our community is a safe space for sharing and support. Please follow these guidelines:</p>
+                    <ul style="margin-top: 10px; padding-left: 20px;">
+                        <li style="margin-bottom: 8px;">Be kind and respectful to all members</li>
+                        <li style="margin-bottom: 8px;">Avoid giving medical advice - share experiences instead</li>
+                        <li style="margin-bottom: 8px;">Respect everyone's privacy and confidentiality</li>
+                        <li style="margin-bottom: 8px;">No hate speech, discrimination, or harassment</li>
+                        <li style="margin-bottom: 8px;">Report any concerning behavior to moderators</li>
+                    </ul>
+                    <button class="btn btn-primary" style="margin-top: 15px;" onclick="hideQuickLinkContent()">
+                        Close
+                    </button>
+                </div>
+                
+                <div class="quick-link-content" id="popular">
+                    <h3>Popular Discussions</h3>
+                    <div style="margin-top: 15px;">
+                        <a href="#" style="display: block; margin-bottom: 10px; color: var(--primary-color);">Coping with anxiety during work meetings</a>
+                        <a href="#" style="display: block; margin-bottom: 10px; color: var(--primary-color);">Best mindfulness techniques for beginners</a>
+                        <a href="#" style="display: block; margin-bottom: 10px; color: var(--primary-color);">How to talk to your doctor about mental health</a>
+                        <a href="#" style="display: block; margin-bottom: 10px; color: var(--primary-color);">Success stories: Overcoming depression</a>
+                    </div>
+                    <button class="btn btn-primary" style="margin-top: 15px;" onclick="hideQuickLinkContent()">
+                        Close
+                    </button>
+                </div>
+                
+                <div class="quick-link-content" id="events">
+                    <h3>Upcoming Events</h3>
+                    <div style="margin-top: 15px;">
+                        <div style="margin-bottom: 15px;">
+                            <h4 style="color: var(--primary-dark);">Weekly Support Group</h4>
+                            <p style="color: var(--secondary-color); font-size: 14px;">Every Wednesday, 7-8 PM EST</p>
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <h4 style="color: var(--primary-dark);">Mindfulness Workshop</h4>
+                            <p style="color: var(--secondary-color); font-size: 14px;">June 15, 2023, 6-8 PM EST</p>
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <h4 style="color: var(--primary-dark);">Q&A with Therapist</h4>
+                            <p style="color: var(--secondary-color); font-size: 14px;">June 22, 2023, 5-6 PM EST</p>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" style="margin-top: 15px;" onclick="hideQuickLinkContent()">
+                        Close
+                    </button>
+                </div>
+                
+                <div class="quick-link-content" id="faq">
+                    <h3>Frequently Asked Questions</h3>
+                    <div style="margin-top: 15px;">
+                        <div style="margin-bottom: 15px;">
+                            <h4 style="color: var(--primary-dark);">How do I report inappropriate content?</h4>
+                            <p style="color: var(--secondary-color);">Click the three dots next to any post and select "Report". Our moderators will review it promptly.</p>
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <h4 style="color: var(--primary-dark);">Can I remain anonymous?</h4>
+                            <p style="color: var(--secondary-color);">Yes, you can use a pseudonym and avoid sharing personal details.</p>
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <h4 style="color: var(--primary-dark);">How do I delete my account?</h4>
+                            <p style="color: var(--secondary-color);">Go to Account Settings and select "Delete Account". Note this action is irreversible.</p>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" style="margin-top: 15px;" onclick="hideQuickLinkContent()">
+                        Close
+                    </button>
+                </div>
+                
+                <div class="sidebar-card">
+                    <div class="card-header">Contact Us</div>
+                    <div class="card-body">
+                        <form class="contact-form" id="contactForm">
+                            <div class="form-group">
+                                <label for="contactName">Your Name</label>
+                                <input type="text" id="contactName" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="contactEmail">Email</label>
+                                <input type="email" id="contactEmail" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="contactSubject">Subject</label>
+                                <select id="contactSubject" class="form-control" required>
+                                    <option value="">Select a topic</option>
+                                    <option value="support">Technical Support</option>
+                                    <option value="feedback">Product Feedback</option>
+                                    <option value="partnership                                    <option value="partnership">Partnership Inquiry</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="contactMessage">Message</label>
+                                <textarea id="contactMessage" class="form-control" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i> Send Message
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="sidebar-card emergency-section">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Emergency Support</h3>
+                    <p>If you're in crisis or experiencing suicidal thoughts, please contact emergency services immediately.</p>
+                    <button class="emergency-btn" id="emergencyBtn">
+                        <i class="fas fa-phone-alt"></i> Emergency Contacts
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Post Modal -->
+    <div class="modal" id="newPostModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Create New Post</h3>
+                <button class="modal-close" id="closePostModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="postForm">
+                    <div class="form-group">
+                        <label for="postTitle">Title</label>
+                        <input type="text" id="postTitle" class="form-control" placeholder="What's your post about?" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="postCategory">Category</label>
+                        <select id="postCategory" class="form-control" required>
+                            <option value="">Select a category</option>
+                            <option value="anxiety">Anxiety Support</option>
+                            <option value="depression">Depression Support</option>
+                            <option value="general">General Support</option>
+                            <option value="relationships">Relationship Issues</option>
+                            <option value="therapy">Therapy Discussions</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="postContent">Your Post</label>
+                        <textarea id="postContent" class="form-control" rows="8" placeholder="Share your thoughts, questions, or experiences..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="postAnonymous"> Post anonymously
+                        </label>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="submitPostBtn">
+                        <span id="postSubmitText">Submit Post</span>
+                        <span class="spinner" id="postSpinner" style="display: none;"></span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Emergency Contacts Modal -->
+    <div class="modal" id="emergencyModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Emergency Contacts</h3>
+                <button class="modal-close" id="closeEmergencyModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="margin-bottom: 20px;">
+                    <h4 style="color: var(--danger-color); margin-bottom: 10px;">Immediate Help</h4>
+                    <p style="margin-bottom: 5px;"><strong>National Suicide Prevention Lifeline:</strong> <a href="tel:988" style="color: var(--primary-color);">988</a></p>
+                    <p style="margin-bottom: 5px;"><strong>Crisis Text Line:</strong> Text HOME to <a href="sms:741741" style="color: var(--primary-color);">741741</a></p>
+                    <p style="margin-bottom: 5px;"><strong>Emergency Services:</strong> <a href="tel:911" style="color: var(--primary-color);">911</a></p>
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <h4 style="color: var(--danger-color); margin-bottom: 10px;">International Helplines</h4>
+                    <p style="margin-bottom: 5px;"><strong>UK:</strong> <a href="tel:116123" style="color: var(--primary-color);">116 123</a> (Samaritans)</p>
+                    <p style="margin-bottom: 5px;"><strong>Canada:</strong> <a href="tel:1-833-456-4566" style="color: var(--primary-color);">1-833-456-4566</a></p>
+                    <p style="margin-bottom: 5px;"><strong>Australia:</strong> <a href="tel:131114" style="color: var(--primary-color);">13 11 14</a> (Lifeline)</p>
+                </div>
+                <div>
+                    <h4 style="color: var(--danger-color); margin-bottom: 10px;">Additional Resources</h4>
+                    <p style="margin-bottom: 5px;"><a href="https://suicidepreventionlifeline.org" target="_blank" style="color: var(--primary-color);">Suicide Prevention Lifeline Website</a></p>
+                    <p style="margin-bottom: 5px;"><a href="https://www.crisistextline.org" target="_blank" style="color: var(--primary-color);">Crisis Text Line Website</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Modal -->
+    <div class="chat-modal" id="chatModal">
+        <div class="chat-header">
+            <h3>Community Chat</h3>
+            <button class="chat-close" id="chatClose">&times;</button>
+        </div>
+        <div class="chat-body" id="chatBody">
+            <div class="no-chat" id="noChat">
+                <i class="fas fa-comments"></i>
+                <p>Start a conversation with community members</p>
+                <p>Click on an online user to begin chatting</p>
+            </div>
+            <!-- Chat messages will be inserted here by JavaScript -->
+        </div>
+        <div class="chat-input" id="chatInput" style="display: none;">
+            <input type="text" placeholder="Type your message..." id="chatMessageInput">
+            <button class="chat-send" id="chatSend"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">Post submitted successfully!</span>
+    </div>
+    <div class="modal" id="profileModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>My Profile</h3>
+                <button class="modal-close" id="closeProfileModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="profile-view" id="profileView">
+                    <div class="profile-header" style="display: flex; align-items: center; margin-bottom: 20px;">
+                        <div class="profile-avatar" style="width: 80px; height: 80px; border-radius: 50%; background-color: var(--primary-light); display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; color: var(--primary-dark); margin-right: 20px;">
+                            SJ
+                        </div>
+                        <div>
+                            <h2 style="color: var(--primary-dark); margin-bottom: 5px;">Sarah Johnson</h2>
+                            <p style="color: var(--secondary-color);">Member since June 2023</p>
+                            <p style="color: var(--secondary-color); font-size: 14px;"><i class="fas fa-map-marker-alt" style="margin-right: 5px;"></i> New York, USA</p>
+                        </div>
+                    </div>
+    
+                    <div class="profile-stats" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px;">
+                        <div style="text-align: center; background-color: var(--primary-light); padding: 15px; border-radius: var(--border-radius);">
+                            <div style="font-size: 24px; font-weight: bold; color: var(--primary-dark);">12</div>
+                            <div style="font-size: 14px; color: var(--secondary-color);">Posts</div>
+                        </div>
+                        <div style="text-align: center; background-color: var(--primary-light); padding: 15px; border-radius: var(--border-radius);">
+                            <div style="font-size: 24px; font-weight: bold; color: var(--primary-dark);">47</div>
+                            <div style="font-size: 14px; color: var(--secondary-color);">Replies</div>
+                        </div>
+                        <div style="text-align: center; background-color: var(--primary-light); padding: 15px; border-radius: var(--border-radius);">
+                            <div style="font-size: 24px; font-weight: bold; color: var(--primary-dark);">3</div>
+                            <div style="font-size: 14px; color: var(--secondary-color);">Connections</div>
+                        </div>
+                    </div>
+    
+                    <div class="profile-bio" style="margin-bottom: 25px;">
+                        <h4 style="color: var(--primary-dark); margin-bottom: 10px;">About Me</h4>
+                        <p style="color: var(--dark-color);" id="profileBio">Mental health advocate and psychology student. Passionate about helping others and sharing coping strategies for anxiety and depression.</p>
+                    </div>
+    
+                    <div class="profile-interests" style="margin-bottom: 25px;">
+                        <h4 style="color: var(--primary-dark); margin-bottom: 10px;">My Interests</h4>
+                        <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                            <span style="background-color: var(--primary-light); color: var(--primary-dark); padding: 5px 10px; border-radius: 20px; font-size: 14px;">Anxiety Support</span>
+                            <span style="background-color: var(--primary-light); color: var(--primary-dark); padding: 5px 10px; border-radius: 20px; font-size: 14px;">Mindfulness</span>
+                            <span style="background-color: var(--primary-light); color: var(--primary-dark); padding: 5px 10px; border-radius: 20px; font-size: 14px;">Cognitive Therapy</span>
+                            <span style="background-color: var(--primary-light); color: var(--primary-dark); padding: 5px 10px; border-radius: 20px; font-size: 14px;">Self-Care</span>
+                        </div>
+                    </div>
+    
+                    <button class="btn btn-primary" id="editProfileBtn" style="width: 100%;">
+                        <i class="fas fa-edit"></i> Edit Profile
+                    </button>
+                </div>
+    
+                <div class="profile-edit" id="profileEdit" style="display: none;">
+                    <form id="profileForm">
+                        <div class="form-group">
+                            <label for="editName">Full Name</label>
+                            <input type="text" id="editName" class="form-control" value="Sarah Johnson" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editLocation">Location</label>
+                            <input type="text" id="editLocation" class="form-control" value="New York, USA">
+                        </div>
+                        <div class="form-group">
+                            <label for="editBio">Bio</label>
+                            <textarea id="editBio" class="form-control" rows="4">Mental health advocate and psychology student. Passionate about helping others and sharing coping strategies for anxiety and depression.</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Interests</label>
+                            <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;">
+                                <label style="display: flex; align-items: center;">
+                                    <input type="checkbox" checked style="margin-right: 5px;"> Anxiety Support
+                                </label>
+                                <label style="display: flex; align-items: center;">
+                                    <input type="checkbox" checked style="margin-right: 5px;"> Mindfulness
+                                </label>
+                                <label style="display: flex; align-items: center;">
+                                    <input type="checkbox" checked style="margin-right: 5px;"> Cognitive Therapy
+                                </label>
+                                <label style="display: flex; align-items: center;">
+                                    <input type="checkbox" checked style="margin-right: 5px;"> Self-Care
+                                </label>
+                                <label style="display: flex; align-items: center;">
+                                    <input type="checkbox" style="margin-right: 5px;"> Depression Support
+                                </label>
+                                <label style="display: flex; align-items: center;">
+                                    <input type="checkbox" style="margin-right: 5px;"> Meditation
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="editAvatar">Profile Picture</label>
+                            <input type="file" id="editAvatar" class="form-control" accept="image/*">
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <button type="button" class="btn" id="cancelEditBtn" style="flex: 1; background-color: #f1f1f1; color: var(--dark-color);">
+                                Cancel
+                            </button>
+                            <button type="submit" class="btn btn-primary" style="flex: 1;">
+                                Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Settings Modal -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Account Settings</h3>
+                <button class="modal-close" id="closeSettingsModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="settingsForm">
+                    <div class="form-group">
+                        <label>Notification Preferences</label>
+                        <div style="margin-top: 10px;">
+                            <label style="display: flex; align-items: center; margin-bottom: 10px;">
+                                <input type="checkbox" checked style="margin-right: 10px;">
+                                Email notifications
+                            </label>
+                            <label style="display: flex; align-items: center; margin-bottom: 10px;">
+                                <input type="checkbox" checked style="margin-right: 10px;">
+                                Push notifications
+                            </label>
+                            <label style="display: flex; align-items: center; margin-bottom: 10px;">
+                                <input type="checkbox" style="margin-right: 10px;">
+                                SMS alerts
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Privacy Settings</label>
+                        <div style="margin-top: 10px;">
+                            <label style="display: flex; align-items: center; margin-bottom: 10px;">
+                                <input type="checkbox" checked style="margin-right: 10px;">
+                                Show my profile to other members
+                            </label>
+                            <label style="display: flex; align-items: center; margin-bottom: 10px;">
+                                <input type="checkbox" style="margin-right: 10px;">
+                                Allow direct messages
+                            </label>
+                            <label style="display: flex; align-items: center; margin-bottom: 10px;">
+                                <input type="checkbox" checked style="margin-right: 10px;">
+                                Show when I'm online
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="currentPassword">Current Password</label>
+                        <input type="password" id="currentPassword" class="form-control" placeholder="Enter current password">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="newPassword">New Password</label>
+                        <input type="password" id="newPassword" class="form-control" placeholder="Enter new password">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm New Password</label>
+                        <input type="password" id="confirmPassword" class="form-control" placeholder="Confirm new password">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 15px;">
+                        Save Settings
+                    </button>
+                </form>
+                
+                <div style="margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px;">
+                    <h4 style="color: var(--danger-color); margin-bottom: 15px;">Danger Zone</h4>
+                    <button class="btn" id="deactivateBtn" style="width: 100%; background-color: #fff8f8; color: var(--danger-color); border: 1px solid #ffdddd;">
+                        <i class="fas fa-user-slash"></i> Deactivate Account
+                    </button>
+                    <button class="btn" id="deleteAccountBtn" style="width: 100%; margin-top: 10px; background-color: #fff8f8; color: var(--danger-color); border: 1px solid #ffdddd;">
+                        <i class="fas fa-trash-alt"></i> Delete Account Permanently
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Deactivate Confirmation Modal -->
+    <div class="modal" id="deactivateModal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3>Deactivate Account</h3>
+                <button class="modal-close" id="closeDeactivateModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom: 20px;">Are you sure you want to deactivate your account? Your profile will be hidden but you can reactivate at any time by logging in.</p>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn" id="cancelDeactivateBtn" style="flex: 1;">
+                        Cancel
+                    </button>
+                    <button class="btn btn-primary" id="confirmDeactivateBtn" style="flex: 1; background-color: var(--danger-color);">
+                        Deactivate
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Delete Account Confirmation Modal -->
+    <div class="modal" id="deleteAccountModal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3>Delete Account</h3>
+                <button class="modal-close" id="closeDeleteAccountModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom: 20px; color: var(--danger-color); font-weight: bold;">Warning: This action cannot be undone. All your data will be permanently deleted.</p>
+                <p style="margin-bottom: 20px;">Please type "DELETE" in the box below to confirm:</p>
+                <input type="text" id="deleteConfirmation" class="form-control" style="margin-bottom: 20px;" placeholder="Type DELETE to confirm">
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn" id="cancelDeleteAccountBtn" style="flex: 1;">
+                        Cancel
+                    </button>
+                    <button class="btn btn-primary" id="confirmDeleteAccountBtn" style="flex: 1; background-color: var(--danger-color);" disabled>
+                        Delete Account
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+   
+    <script>
+        // DOM Elements
+        const menuToggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+        const newPostBtn = document.getElementById('newPostBtn');
+        const newPostModal = document.getElementById('newPostModal');
+        const closePostModal = document.getElementById('closePostModal');
+        const postForm = document.getElementById('postForm');
+        const emergencyBtn = document.getElementById('emergencyBtn');
+        const emergencyModal = document.getElementById('emergencyModal');
+        const closeEmergencyModal = document.getElementById('closeEmergencyModal');
+        const contactForm = document.getElementById('contactForm');
+        const quickLinks = document.querySelectorAll('.quick-link');
+        const quickLinkContents = document.querySelectorAll('.quick-link-content');
+        const onlineUsersContainer = document.getElementById('onlineUsers');
+        const chatModal = document.getElementById('chatModal');
+        const chatClose = document.getElementById('chatClose');
+        const chatBody = document.getElementById('chatBody');
+        const chatInput = document.getElementById('chatInput');
+        const chatMessageInput = document.getElementById('chatMessageInput');
+        const chatSend = document.getElementById('chatSend');
+        const noChat = document.getElementById('noChat');
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
+        const postSubmitBtn = document.getElementById('submitPostBtn');
+        const postSubmitText = document.getElementById('postSubmitText');
+        const postSpinner = document.getElementById('postSpinner');
+
+        // Sample data for online users
+        const onlineUsers = [
+            { id: 1, name: 'John D.', online: true, avatar: 'JD' },
+            { id: 2, name: 'Anna M.', online: true, avatar: 'AM' },
+            { id: 3, name: 'Tom S.', online: true, avatar: 'TS' },
+            { id: 4, name: 'Rachel K.', online: true, avatar: 'RK' },
+            { id: 5, name: 'Lisa P.', online: true, avatar: 'LP' },
+            { id: 6, name: 'Mike G.', online: false, avatar: 'MG' },
+            { id: 7, name: 'Sarah J.', online: true, avatar: 'SJ' }
+        ];
+
+        // Sample chat messages
+        const sampleMessages = {
+            1: [
+                { sender: 'John D.', message: 'Hi there! How are you feeling today?', time: '10:30 AM', outgoing: false },
+                { sender: 'You', message: 'I\'m doing okay, just a bit anxious about work', time: '10:32 AM', outgoing: true },
+                { sender: 'John D.', message: 'I understand. Work stress can be tough. Have you tried any breathing exercises?', time: '10:34 AM', outgoing: false }
+            ],
+            2: [
+                { sender: 'Anna M.', message: 'Hello! I saw your post about Lexapro. I\'ve been on it for 6 months.', time: '9:15 AM', outgoing: false }
+            ],
+            3: [
+                { sender: 'Tom S.', message: 'Hey, I read your question about motivation. I struggle with that too.', time: 'Yesterday', outgoing: false },
+                { sender: 'You', message: 'Thanks for reaching out. What helps you on bad days?', time: 'Yesterday', outgoing: true }
+            ]
+        };
+
+        // Current chat state
+        let currentChatUserId = null;
+        let messages = [];
+
+        // Toggle sidebar on mobile
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+            menuToggle.innerHTML = sidebar.classList.contains('open') ? 
+                '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
+        });
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth <= 992 && !sidebar.contains(e.target) && e.target !== menuToggle) {
+                sidebar.classList.remove('open');
+                menuToggle.innerHTML = '<i class="fas fa-bars"></i>';
+            }
+        });
+
+        // New post modal
+        newPostBtn.addEventListener('click', () => {
+            newPostModal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        });
+
+        closePostModal.addEventListener('click', () => {
+            newPostModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        });
+
+        // Emergency modal
+        emergencyBtn.addEventListener('click', () => {
+            emergencyModal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        });
+
+        closeEmergencyModal.addEventListener('click', () => {
+            emergencyModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        });
+
+        // Close modals when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target === newPostModal) {
+                newPostModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+            if (e.target === emergencyModal) {
+                emergencyModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        });
+
+        // Form submission - New Post
+        postForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // Show loading state
+            postSubmitText.style.display = 'none';
+            postSpinner.style.display = 'block';
+            
+            // Simulate API call
+            setTimeout(() => {
+                const title = document.getElementById('postTitle').value;
+                const category = document.getElementById('postCategory').value;
+                const content = document.getElementById('postContent').value;
+                const isAnonymous = document.getElementById('postAnonymous').checked;
+                
+                // In a real app, you would send this data to your backend
+                console.log('New post submitted:', { title, category, content, isAnonymous });
+                
+                // Reset form
+                postForm.reset();
+                
+                // Hide modal
+                newPostModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+                
+                // Reset button state
+                postSubmitText.style.display = 'inline-block';
+                postSpinner.style.display = 'none';
+                
+                // Show success toast
+                showToast('Your post has been submitted successfully!');
+                
+                // In a real app, you would update the forum posts list here
+            }, 1500);
+        });
+
+        // Contact form submission
+        contactForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('contactName').value;
+            const email = document.getElementById('contactEmail').value;
+            const subject = document.getElementById('contactSubject').value;
+            const message = document.getElementById('contactMessage').value;
+            
+            // In a real app, you would send this data to your backend
+            console.log('Contact form submitted:', { name, email, subject, message });
+            
+            // Reset form
+            contactForm.reset();
+            
+            // Show success toast
+            showToast('Your message has been sent! We\'ll respond soon.');
+        });
+
+        // Quick links functionality
+        quickLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const target = link.getAttribute('data-target');
+                
+                // Hide all quick link contents
+                quickLinkContents.forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                // Show the selected content
+                document.getElementById(target).classList.add('active');
+            });
+        });
+
+        function hideQuickLinkContent() {
+            quickLinkContents.forEach(content => {
+                content.classList.remove('active');
+            });
+        }
+
+        // Show toast notification
+        function showToast(message) {
+            toastMessage.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Render online users
+        function renderOnlineUsers() {
+            onlineUsersContainer.innerHTML = '';
+            
+            onlineUsers.forEach(user => {
+                if (user.online) {
+                    const userElement = document.createElement('div');
+                    userElement.className = 'user-bubble';
+                    
+                    const avatar = document.createElement('div');
+                    avatar.className = `user-bubble-avatar ${user.online ? 'online' : ''}`;
+                    avatar.textContent = user.avatar;
+                    avatar.addEventListener('click', () => startChat(user));
+                    
+                    const name = document.createElement('div');
+                    name.className = 'user-bubble-name';
+                    name.textContent = user.name;
+                    
+                    userElement.appendChild(avatar);
+                    userElement.appendChild(name);
+                    onlineUsersContainer.appendChild(userElement);
+                }
+            });
+        }
+
+        // Start chat with a user
+        function startChat(user) {
+            currentChatUserId = user.id;
+            messages = sampleMessages[user.id] || [];
+            
+            // Update chat UI
+            document.querySelector('.chat-header h3').textContent = `Chat with ${user.name}`;
+            noChat.style.display = 'none';
+            chatInput.style.display = 'flex';
+            
+            // Render messages
+            renderMessages();
+            
+            // Show chat modal if not already visible
+            if (chatModal.style.display !== 'flex') {
+                chatModal.style.display = 'flex';
+            }
+            
+            // Focus input
+            chatMessageInput.focus();
+        }
+
+        // Render chat messages
+        function renderMessages() {
+            chatBody.innerHTML = '';
+            
+            if (messages.length === 0) {
+                const noMessages = document.createElement('div');
+                noMessages.className = 'no-chat';
+                noMessages.innerHTML = `
+                    <i class="fas fa-comment-slash"></i>
+                    <p>No messages yet</p>
+                    <p>Say hello to start the conversation!</p>
+                `;
+                chatBody.appendChild(noMessages);
+                return;
+            }
+            
+            messages.forEach(msg => {
+                const messageElement = document.createElement('div');
+                messageElement.className = `chat-message ${msg.outgoing ? 'message-out' : 'message-in'}`;
+                
+                messageElement.innerHTML = `
+                    <div>${msg.message}</div>
+                    <span class="message-time">${msg.sender} • ${msg.time}</span>
+                `;
+                
+                chatBody.appendChild(messageElement);
+            });
+            
+            // Scroll to bottom
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
+        // Send message
+        function sendMessage() {
+            const messageText = chatMessageInput.value.trim();
+            if (messageText === '') return;
+            
+            // Create new message
+            const newMessage = {
+                sender: 'You',
+                message: messageText,
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                outgoing: true
+            };
+            
+            // Add to messages
+            messages.push(newMessage);
+            
+            // Clear input
+            chatMessageInput.value = '';
+            
+            // Render messages
+            renderMessages();
+            
+            // Simulate reply after 1-3 seconds
+            if (Math.random() > 0.3) { // 70% chance of reply
+                setTimeout(() => {
+                    const replies = [
+                        "I understand how you feel. That sounds really challenging.",
+                        "Have you tried talking to someone about this?",
+                        "I've been through something similar. It gets better.",
+                        "Thank you for sharing that with me.",
+                        "That's a really good point. I hadn't thought of it that way.",
+                        "Would you like to talk more about this?"
+                    ];
+                    
+                    const randomReply = replies[Math.floor(Math.random() * replies.length)];
+                    
+                    const replyMessage = {
+                        sender: onlineUsers.find(u => u.id === currentChatUserId).name,
+                        message: randomReply,
+                        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                        outgoing: false
+                    };
+                    
+                    messages.push(replyMessage);
+                    renderMessages();
+                }, 1000 + Math.random() * 2000);
+            }
+        }
+
+        // Chat event listeners
+        chatClose.addEventListener('click', () => {
+            chatModal.style.display = 'none';
+        });
+
+        chatSend.addEventListener('click', sendMessage);
+
+        chatMessageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Initialize the page
+        function init() {
+            renderOnlineUsers();
+            
+            // Check if chat should be open from URL hash
+            if (window.location.hash === '#chat') {
+                // In a real app, you might have logic to open a specific chat
+                chatModal.style.display = 'flex';
+            }
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+    // Add these variables to your existing script
+    const profileModal = document.getElementById('profileModal');
+    const closeProfileModal = document.getElementById('closeProfileModal');
+    const settingsModal = document.getElementById('settingsModal');
+    const closeSettingsModal = document.getElementById('closeSettingsModal');
+    const editProfileBtn = document.getElementById('editProfileBtn');
+    const profileView = document.getElementById('profileView');
+    const profileEdit = document.getElementById('profileEdit');
+    const cancelEditBtn = document.getElementById('cancelEditBtn');
+    const profileForm = document.getElementById('profileForm');
+    const settingsForm = document.getElementById('settingsForm');
+    const deactivateBtn = document.getElementById('deactivateBtn');
+    const deleteAccountBtn = document.getElementById('deleteAccountBtn');
+    const deactivateModal = document.getElementById('deactivateModal');
+    const closeDeactivateModal = document.getElementById('closeDeactivateModal');
+    const cancelDeactivateBtn = document.getElementById('cancelDeactivateBtn');
+    const confirmDeactivateBtn = document.getElementById('confirmDeactivateBtn');
+    const deleteAccountModal = document.getElementById('deleteAccountModal');
+    const closeDeleteAccountModal = document.getElementById('closeDeleteAccountModal');
+    const cancelDeleteAccountBtn = document.getElementById('cancelDeleteAccountBtn');
+    const confirmDeleteAccountBtn = document.getElementById('confirmDeleteAccountBtn');
+    document.querySelectorAll('.user-dropdown a').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const action = link.textContent.trim();
+            
+            if (action === 'My Profile') {
+                profileModal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            } else if (action === 'Settings') {
+                settingsModal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            } else if (action === 'Logout') {
+                // In a real app, this would log the user out
+                showToast('You have been logged out');
+                setTimeout(() => {
+                    window.location.href = 'login.html'; // Redirect to login page
+                }, 1500);
+            }
+        });
+    });
+
+    // Profile modal functionality
+    closeProfileModal.addEventListener('click', () => {
+        profileModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    });
+
+    // Settings modal functionality
+    closeSettingsModal.addEventListener('click', () => {
+        settingsModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    });
+
+ 
+  // Edit profile toggle
+  editProfileBtn.addEventListener('click', () => {
+        profileView.style.display = 'none';
+        profileEdit.style.display = 'block';
+    });
+
+    cancelEditBtn.addEventListener('click', () => {
+        profileView.style.display = 'block';
+        profileEdit.style.display = 'none';
+    });
+
+    // Profile form submission
+    profileForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        // Get form values
+        const name = document.getElementById('editName').value;
+        const location = document.getElementById('editLocation').value;
+        const bio = document.getElementById('editBio').value;
+        document.querySelector('.profile-header h2').textContent = name;
+        document.querySelector('.profile-header p:nth-of-type(2)').innerHTML = `<i class="fas fa-map-marker-alt" style="margin-right: 5px;"></i> ${location}`;
+        document.getElementById('profileBio').textContent = bio;
+        
+        // Switch back to view mode
+        profileView.style.display = 'block';
+        profileEdit.style.display = 'none';
+        
+        // Show success message
+        showToast('Profile updated successfully!');
+    });
+
+    // Settings form submission
+    settingsForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        showToast('Settings saved successfully!');
+        settingsModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    });
+
+    // Deactivate account flow
+    deactivateBtn.addEventListener('click', () => {
+        deactivateModal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    });
+
+    closeDeactivateModal.addEventListener('click', () => {
+        deactivateModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    });
+
+    cancelDeactivateBtn.addEventListener('click', () => {
+        deactivateModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    });
+    
+    confirmDeactivateBtn.addEventListener('click', () => {
+        deactivateModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+        showToast('Account deactivated. We hope to see you again soon!');
+        setTimeout(() => {
+            window.location.href = 'index.html'; // Redirect to home page
+        }, 2000);
+    });
+
+    // Delete account flow
+    deleteAccountBtn.addEventListener('click', () => {
+        deleteAccountModal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    });
+
+    closeDeleteAccountModal.addEventListener('click', () => {
+        deleteAccountModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    });
+    cancelDeleteAccountBtn.addEventListener('click', () => {
+        deleteAccountModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    });
+
+    deleteConfirmation.addEventListener('input', (e) => {
+        confirmDeleteAccountBtn.disabled = e.target.value !== 'DELETE';
+    });
+
+    confirmDeleteAccountBtn.addEventListener('click', () => {
+        deleteAccountModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+        showToast('Account deleted successfully. Thank you for being part of our community.');
+        setTimeout(() => {
+            window.location.href = 'index.html'; // Redirect to home page
+        }, 2000);
+    });
+    window.addEventListener('click', (e) => {
+        if (e.target === profileModal) {
+            profileModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        if (e.target === settingsModal) {
+            settingsModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        if (e.target === deactivateModal) {
+            deactivateModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        if (e.target === deleteAccountModal) {
+            deleteAccountModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    });
+    </script>
+</body>
+</html>
