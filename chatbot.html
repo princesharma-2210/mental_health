@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindCare AI Chatbot</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --primary-dark: #3a5a8a;
+            --primary-light: #e8f4ff;
+            --secondary-color: #6c757d;
+            --user-message: #4a6fa5;
+            --bot-message: #f0f4f8;
+            --text-dark: #2c3e50;
+            --text-light: #f8f9fa;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --border-radius: 12px;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+            --whatsapp-green: #25D366;
+            --whatsapp-light: #dcf8c6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            background-color: #f5f7fa;
+            color: var(--text-dark);
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            padding: 30px 20px;
+            box-shadow: var(--box-shadow);
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        .sidebar-header {
+            padding-bottom: 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 25px;
+        }
+
+        .sidebar h2 {
+            color: white;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar h2 i {
+            margin-right: 12px;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar li {
+            margin-bottom: 8px;
+        }
+
+        .sidebar li a {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            font-size: 16px;
+        }
+
+        .sidebar li a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .sidebar li a.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-weight: 500;
+        }
+
+        .sidebar li a i {
+            margin-right: 12px;
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+            position: relative;
+        }
+
+        .chat-header {
+            padding: 20px 30px;
+            background-color: white;
+            box-shadow: var(--box-shadow);
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chat-header h1 {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .chat-header h1 i {
+            margin-right: 12px;
+            color: var(--primary-dark);
+        }
+
+        .chat-header-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .chat-header-btn {
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .chat-header-btn:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* Welcome Banner */
+        .welcome-banner {
+            background-color: var(--whatsapp-green);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .welcome-banner img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid white;
+            box-shadow: var(--box-shadow);
+        }
+
+        .welcome-banner h2 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .welcome-banner p {
+            font-size: 1rem;
+            margin-bottom: 15px;
+            max-width: 600px;
+        }
+
+        .start-chat-btn {
+            background-color: white;
+            color: var(--whatsapp-green);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1rem;
+        }
+
+        .start-chat-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Chat Container */
+        #chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 30px;
+            overflow: hidden;
+            display: none; /* Initially hidden */
+        }
+
+        #chatbox {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 20px;
+            scroll-behavior: smooth;
+        }
+
+        /* Message Styles */
+        .message {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            max-width: 80%;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message-content {
+            padding: 15px 20px;
+            border-radius: var(--border-radius);
+            position: relative;
+            line-height: 1.6;
+        }
+
+        .user-message {
+            align-items: flex-end;
+            margin-left: auto;
+        }
+
+        .user-message .message-content {
+            background-color: var(--user-message);
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+
+        .bot-message {
+            align-items: flex-start;
+        }
+
+        .bot-message .message-content {
+            background-color: var(--whatsapp-light);
+            color: var(--text-dark);
+            border-bottom-left-radius: 5px;
+        }
+
+        .message-time {
+            font-size: 12px;
+            color: var(--secondary-color);
+            margin-top: 5px;
+        }
+
+        .user-message .message-time {
+            text-align: right;
+        }
+
+        .bot-message .message-time {
+            text-align: left;
+        }
+
+        /* Typing Indicator */
+        .typing-indicator {
+            display: inline-flex;
+            padding: 12px 20px;
+            background-color: var(--whatsapp-light);
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--secondary-color);
+            border-radius: 50%;
+            margin: 0 3px;
+            animation: typingAnimation 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typingAnimation {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-5px); }
+        }
+
+        /* Input Area */
+        .input-container {
+            display: flex;
+            gap: 15px;
+            padding: 15px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            align-items: center;
+        }
+
+        #userInput {
+            flex: 1;
+            padding: 15px 20px;
+            border: 1px solid #ddd;
+            border-radius: 30px;
+            font-size: 16px;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        #userInput:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.2);
+        }
+
+        .send-btn {
+            background-color: var(--whatsapp-green);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .send-btn:hover {
+            background-color: #128C7E;
+            transform: scale(1.05);
+        }
+
+        .send-btn:disabled {
+            background-color: var(--secondary-color);
+            cursor: not-allowed;
+        }
+
+        /* Quick Reply Buttons */
+        .quick-replies {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .quick-reply-btn {
+            background-color: white;
+            color: var(--whatsapp-green);
+            border: 1px solid var(--whatsapp-green);
+            padding: 8px 15px;
+            border-radius: 30px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .quick-reply-btn:hover {
+            background-color: var(--whatsapp-light);
+        }
+
+        /* Mood Selector */
+        .mood-selector {
+            display: flex;
+            justify-content: space-around;
+            margin: 15px 0;
+        }
+
+        .mood-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        .mood-option:hover {
+            background-color: var(--primary-light);
+        }
+
+        .mood-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background-color: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        .mood-label {
+            font-size: 12px;
+            color: var(--secondary-color);
+        }
+
+        
+        .exercise-container {
+            background-color: #f8f9fa;
+            border-radius: var(--border-radius);
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .exercise-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            color: var(--primary-dark);
+        }
+
+        .exercise-header i {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+
+        .exercise-timer {
+            font-size: 24px;
+            text-align: center;
+            margin: 10px 0;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .exercise-btn {
+            background-color: var(--whatsapp-green);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .exercise-btn i {
+            margin-right: 8px;
+        }
+
+        .exercise-btn:hover {
+            background-color: #128C7E;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+                height: auto;
+                min-height: 100vh;
+            }
+
+            .sidebar {
+                width: 100%;
+                padding: 15px;
+            }
+
+            .sidebar-nav {
+                display: flex;
+                overflow-x: auto;
+                padding-bottom: 10px;
+            }
+
+            .sidebar ul {
+                display: flex;
+                gap: 10px;
+            }
+
+            .sidebar li {
+                margin-bottom: 0;
+            }
+
+            .sidebar li a {
+                white-space: nowrap;
+            }
+
+            .chat-header {
+                padding: 15px;
+            }
+
+            .chat-header h1 {
+                font-size: 1.4rem;
+            }
+
+            #chat-container {
+                padding: 15px;
+            }
+
+            .message {
+                max-width: 90%;
+            }
+
+            .input-container {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2><i class="fas fa-brain"></i> MindCare</h2>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="quiz.html"><i class="fas fa-clipboard-list"></i> Mental Health Quiz</a></li>
+                <li><a href="chatbot.html" class="active"><i class="fas fa-robot"></i> AI Chatbot</a></li>
+                <li><a href="mood.html"><i class="fas fa-chart-line"></i> Mood Tracker</a></li>
+                <li><a href="consult.html"><i class="fas fa-user-md"></i> Consult a Doctor</a></li>
+                <li><a href="community.html"><i class="fas fa-user-md"></i> <span>Community</span></a></li>
+            </ul>
+        </nav>
+    </div>
+
+    
+    <div class="main-content">
+        <div class="chat-header">
+            <h1><i class="fas fa-robot"></i> MindCare Companion</h1>
+            <div class="chat-header-actions">
+                <button class="chat-header-btn" title="Clear Conversation" id="clearChatBtn">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+                <button class="chat-header-btn" title="Exercises" id="exercisesBtn">
+                    <i class="fas fa-heartbeat"></i>
+                </button>
+            </div>
+        </div>
+        
+        
+        <div class="welcome-banner" id="welcomeBanner">
+            <img src="https://via.placeholder.com/120x120/25D366/FFFFFF?text=SIERA" alt="SIERA AI Therapist">
+            <h2>CHAT WITH SIERA</h2>
+            <p>Your Free Personal AI Therapist</p>
+            <p>Measure & improve your mental health in real time with your personal AI chat bot. No sign up. Available 24/7. Daily insights just for you!</p>
+            <button class="start-chat-btn" id="startChatBtn">
+                <i class="fas fa-comment-dots"></i> Chat with me
+            </button>
+        </div>
+        
+        <div id="chat-container">
+            <div id="chatbox">
+
+            </div>
+            
+            
+            <div class="input-container">
+                <input type="text" id="userInput" placeholder="Type your message here..." autocomplete="off">
+                <button class="send-btn" id="sendBtn">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const chatbox = document.getElementById('chatbox');
+            const userInput = document.getElementById('userInput');
+            const sendBtn = document.getElementById('sendBtn');
+            const clearChatBtn = document.getElementById('clearChatBtn');
+            const exercisesBtn = document.getElementById('exercisesBtn');
+            const startChatBtn = document.getElementById('startChatBtn');
+            const welcomeBanner = document.getElementById('welcomeBanner');
+            const chatContainer = document.getElementById('chat-container');
+            
+            
+            const now = new Date();
+            
+
+            let conversationHistory = [];
+            
+            
+            if (localStorage.getItem('mindcareChatHistory')) {
+                conversationHistory = JSON.parse(localStorage.getItem('mindcareChatHistory'));
+                // If there's history, show chat interface directly
+                welcomeBanner.style.display = 'none';
+                chatContainer.style.display = 'flex';
+                renderChatHistory();
+            }
+            
+        
+            sendBtn.addEventListener('click', sendMessage);
+            userInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+            
+            clearChatBtn.addEventListener('click', clearConversation);
+            exercisesBtn.addEventListener('click', showExerciseMenu);
+            startChatBtn.addEventListener('click', startNewChat);
+            
+            
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('quick-reply-btn')) {
+                    userInput.value = e.target.getAttribute('data-reply');
+                    sendMessage();
+                }
+            });
+            
+            // Function to start new chat
+            function startNewChat() {
+                welcomeBanner.style.display = 'none';
+                chatContainer.style.display = 'flex';
+                
+                // Add initial bot message
+                addMessage("Hello! I'm SIERA, your MindCare companion. I'm here to support your mental wellbeing with listening and therapeutic exercises. Would you like to:", 'bot');
+                
+            
+                setTimeout(() => {
+                    const quickReplies = document.createElement('div');
+                    quickReplies.className = 'quick-replies';
+                    quickReplies.innerHTML = `
+                        <button class="quick-reply-btn" data-reply="Talk about how I'm feeling">Talk about my feelings</button>
+                        <button class="quick-reply-btn" data-reply="Do a mental exercise">Try a mental exercise</button>
+                        <button class="quick-reply-btn" data-reply="Play a mind game">Play a mind game</button>
+                    `;
+                    
+                    const lastMessage = chatbox.lastElementChild;
+                    if (lastMessage) {
+                        lastMessage.querySelector('.message-content').appendChild(quickReplies);
+                    }
+                }, 300);
+            }
+            
+        
+            function sendMessage() {
+                const message = userInput.value.trim();
+                if (message === '') return;
+                
+                
+                addMessage(message, 'user');
+                
+                
+                userInput.value = '';
+                
+        
+                showTypingIndicator();
+                
+                
+                setTimeout(() => {
+                    removeTypingIndicator();
+                    const botResponse = generateResponse(message);
+                    addMessage(botResponse, 'bot');
+                    
+                    // Scroll to bottom
+                    chatbox.scrollTop = chatbox.scrollHeight;
+                }, 1500);
+            }
+            
+            
+            function addMessage(content, sender) {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                
+                
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${sender}-message`;
+                
+                messageDiv.innerHTML = `
+                    <div class="message-content">
+                        ${formatMessageContent(content, sender)}
+                    </div>
+                    <div class="message-time">Today at ${timeString}</div>
+                `;
+                
+                chatbox.appendChild(messageDiv);
+                
+        
+                conversationHistory.push({
+                    sender,
+                    content,
+                    timestamp: now.toISOString()
+                });
+                
+                
+                localStorage.setItem('mindcareChatHistory', JSON.stringify(conversationHistory));
+                
+                
+                chatbox.scrollTop = chatbox.scrollHeight;
+            }
+            
+            
+            function formatMessageContent(content, sender) {
+                if (sender === 'bot') {
+                
+                    if (content.includes('breathing exercise')) {
+                        return `
+                            <p>${content}</p>
+                            <div class="exercise-container">
+                                <div class="exercise-header">
+                                    <i class="fas fa-wind"></i>
+                                    <h3>4-7-8 Breathing Exercise</h3>
+                                </div>
+                                <p>This exercise helps reduce anxiety and promote relaxation:</p>
+                                <div class="exercise-timer" id="breathTimer">Ready</div>
+                                <button class="exercise-btn" id="startBreathing">
+                                    <i class="fas fa-play"></i> Start Exercise
+                                </button>
+                            </div>
+                        `;
+                    }
+                    else if (content.includes('mindfulness meditation')) {
+                        return `
+                            <p>${content}</p>
+                            <div class="exercise-container">
+                                <div class="exercise-header">
+                                    <i class="fas fa-spa"></i>
+                                    <h3>5-Minute Mindfulness</h3>
+                                </div>
+                                <p>Focus on your breathing and observe your thoughts without judgment:</p>
+                                <div class="exercise-timer" id="meditationTimer">5:00</div>
+                                <button class="exercise-btn" id="startMeditation">
+                                    <i class="fas fa-play"></i> Begin Meditation
+                                </button>
+                            </div>
+                        `;
+                    }
+                    else if (content.includes('gratitude journaling')) {
+                        return `
+                            <p>${content}</p>
+                            <div class="exercise-container">
+                                <div class="exercise-header">
+                                    <i class="fas fa-book"></i>
+                                    <h3>Gratitude Journal</h3>
+                                </div>
+                                <p>Take a moment to write down 3 things you're grateful for today:</p>
+                                <textarea id="gratitudeJournal" placeholder="Write your thoughts here..." style="width: 100%; padding: 10px; border-radius: var(--border-radius); border: 1px solid #ddd; min-height: 100px; margin: 10px 0;"></textarea>
+                                <button class="exercise-btn" id="saveJournal">
+                                    <i class="fas fa-save"></i> Save Entries
+                                </button>
+                            </div>
+                        `;
+                    }
+                    else if (content.includes('cognitive reframing')) {
+                        return `
+                            <p>${content}</p>
+                            <div class="exercise-container">
+                                <div class="exercise-header">
+                                    <i class="fas fa-exchange-alt"></i>
+                                    <h3>Thought Reframing</h3>
+                                </div>
+                                <p>Identify a negative thought and try to reframe it positively:</p>
+                                <div style="margin: 10px 0;">
+                                    <p><strong>Negative Thought:</strong></p>
+                                    <input type="text" id="negativeThought" placeholder="I'm not good enough" style="width: 100%; padding: 8px; border-radius: var(--border-radius); border: 1px solid #ddd;">
+                                    
+                                    <p style="margin-top: 10px;"><strong>Positive Reframe:</strong></p>
+                                    <input type="text" id="positiveReframe" placeholder="I'm doing my best and that's enough" style="width: 100%; padding: 8px; border-radius: var(--border-radius); border: 1px solid #ddd;">
+                                </div>
+                                <button class="exercise-btn" id="saveReframe">
+                                    <i class="fas fa-check"></i> Save Reframe
+                                </button>
+                            </div>
+                        `;
+                    }
+                    else if (content.includes('memory game')) {
+                        return `
+                            <p>${content}</p>
+                            <div class="exercise-container">
+                                <div class="exercise-header">
+                                    <i class="fas fa-brain"></i>
+                                    <h3>Memory Sequence Game</h3>
+                                </div>
+                                <p>Remember and repeat the growing sequence of colors:</p>
+                                <div id="memoryGameContainer" style="text-align: center; margin: 15px 0;">
+                                    <div id="memorySequence" style="display: flex; justify-content: center; gap: 10px; margin-bottom: 15px;"></div>
+                                    <button class="exercise-btn" id="startMemoryGame" style="margin-bottom: 10px;">
+                                        <i class="fas fa-play"></i> Start Game
+                                    </button>
+                                    <button class="exercise-btn" id="repeatSequence" style="display: none; background-color: var(--success-color);">
+                                        <i class="fas fa-redo"></i> Repeat Sequence
+                                    </button>
+                                    <div id="gameMessage" style="margin-top: 10px; font-weight: bold;"></div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    
+                
+                    return `<p>${content}</p>`;
+                }
+                
+                
+                return `<p>${content}</p>`;
+            }
+            
+            // Function to show typing indicator
+            function showTypingIndicator() {
+                const typingDiv = document.createElement('div');
+                typingDiv.className = 'typing-indicator';
+                typingDiv.id = 'typingIndicator';
+                typingDiv.innerHTML = `
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                `;
+                chatbox.appendChild(typingDiv);
+                chatbox.scrollTop = chatbox.scrollHeight;
+            }
+            
+            // Function to remove typing indicator
+            function removeTypingIndicator() {
+                const typingIndicator = document.getElementById('typingIndicator');
+                if (typingIndicator) {
+                    typingIndicator.remove();
+                }
+            }
+            
+            
+            function generateResponse(userMessage) {
+                // Convert to lowercase for easier matching
+                const message = userMessage.toLowerCase();
+                
+                
+                if (message.includes('exercise') || message.includes('breath') || message.includes('calm')) {
+                    return `Here's a calming breathing exercise to help reduce stress and anxiety. Would you like to try the 4-7-8 breathing technique? Inhale for 4 seconds, hold for 7 seconds, exhale for 8 seconds.`;
+                }
+                else if (message.includes('game') || message.includes('play') || message.includes('memory')) {
+                    return `Let's play a memory sequence game! This can help improve your focus and cognitive skills. I'll show you a sequence of colors, and you try to repeat it. Ready?`;
+                }
+                else if (message.includes('meditat') || message.includes('mindful')) {
+                    return `Mindfulness meditation is great for reducing stress. Let's try a 5-minute mindfulness meditation exercise where we focus on our breathing. Would you like to begin?`;
+                }
+                else if (message.includes('gratitude') || message.includes('journal')) {
+                    return `Practicing gratitude can significantly improve your mood. Let's do a quick gratitude journaling exercise. Can you list 3 things you're grateful for today?`;
+                }
+                else if (message.includes('reframe') || message.includes('negative thought')) {
+                    return `Cognitive reframing helps change negative thought patterns. Let's identify a negative thought you're having and try to reframe it in a more positive way. What's one negative thought you'd like to work on?`;
+                }
+                
+                // Check for emotional states
+                if (message.includes('anxious') || message.includes('anxiety')) {
+                    return `I understand you're feeling anxious. Let's try a grounding exercise: Name 5 things you can see, 4 things you can touch, 3 things you can hear, 2 things you can smell, and 1 thing you can taste. Would you like to try this or prefer a different exercise?`;
+                } 
+                else if (message.includes('depressed') || message.includes('depression') || message.includes('sad')) {
+                    return `I hear that you're feeling down. Let's try an activity that might help - would you prefer a mood-boosting exercise, a cognitive game, or to talk more about what you're feeling?`;
+                }
+                else if (message.includes('stress') || message.includes('stressed')) {
+                    return `Stress can feel overwhelming. I can guide you through a breathing exercise, progressive muscle relaxation, or a quick mindfulness practice. Which would you prefer?`;
+                }
+                else if (message.includes('thank')) {
+                    return `You're very welcome! Remember I'm here with exercises and support whenever you need. Would you like to try another mental wellness activity?`;
+                }
+                else if (message.includes('hello') || message.includes('hi') || message.includes('hey')) {
+                    return `Hello again! Would you like to talk about how you're feeling, try a mental exercise, or play a mind game?`;
+                }
+                else {
+                    // Default empathetic responses that suggest exercises
+                    const responses = [
+                        "I hear what you're saying. Would a mindfulness exercise or cognitive game help right now?",
+                        "That sounds challenging. Sometimes a quick mental exercise can help - would you like to try one?",
+                        "Thank you for sharing. I have several exercises that might help - breathing techniques, gratitude journaling, or memory games. Interested in trying one?",
+                        "I'm here to support you. Would you like to talk more or try a therapeutic exercise?"
+                    ];
+                    
+                    return responses[Math.floor(Math.random() * responses.length)];
+                }
+            }
+            
+            // Function to show exercise menu
+            function showExerciseMenu() {
+                addMessage("Show mental exercises", 'user');
+                
+                setTimeout(() => {
+                    showTypingIndicator();
+                    
+                    setTimeout(() => {
+                        removeTypingIndicator();
+                        addMessage(`
+                            <p>Here are some mental wellness exercises you can try:</p>
+                            <div class="quick-replies">
+                                <button class="quick-reply-btn" data-reply="Breathing exercise">Breathing Exercise</button>
+                                <button class="quick-reply-btn" data-reply="Mindfulness meditation">Mindfulness Meditation</button>
+                                <button class="quick-reply-btn" data-reply="Gratitude journaling">Gratitude Journal</button>
+                                <button class="quick-reply-btn" data-reply="Cognitive reframing">Thought Reframing</button>
+                                <button class="quick-reply-btn" data-reply="Memory game">Memory Game</button>
+                            </div>
+                        `, 'bot');
+                    }, 1000);
+                }, 500);
+            }
+            
+            // Function to clear conversation
+            function clearConversation() {
+                if (confirm('Are you sure you want to clear this conversation?')) {
+                    chatbox.innerHTML = '';
+                    conversationHistory = [];
+                    localStorage.removeItem('mindcareChatHistory');
+                    
+                    
+                    welcomeBanner.style.display = 'flex';
+                    chatContainer.style.display = 'none';
+                }
+            }
+            
+            
+            function renderChatHistory() {
+                chatbox.innerHTML = '';
+                
+                conversationHistory.forEach(msg => {
+                    const now = new Date(msg.timestamp);
+                    const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = `message ${msg.sender}-message`;
+                    
+                    messageDiv.innerHTML = `
+                        <div class="message-content">
+                            ${formatMessageContent(msg.content, msg.sender)}
+                        </div>
+                        <div class="message-time">Today at ${timeString}</div>
+                    `;
+                    
+                    chatbox.appendChild(messageDiv);
+                });
+                
+                // Scroll to bottom
+                chatbox.scrollTop = chatbox.scrollHeight;
+            }
+            
+            
+            chatbox.addEventListener('click', function(e) {
+                // Breathing exercise
+                if (e.target.id === 'startBreathing') {
+                    startBreathingExercise();
+                }
+                
+            
+                if (e.target.id === 'startMeditation') {
+                    startMeditationExercise();
+                }
+                
+            
+                if (e.target.id === 'saveJournal') {
+                    const entries = document.getElementById('gratitudeJournal').value;
+                    if (entries.trim() !== '') {
+                        addMessage(`I wrote in my gratitude journal: ${entries}`, 'user');
+                        
+                        setTimeout(() => {
+                            showTypingIndicator();
+                            
+                            setTimeout(() => {
+                                removeTypingIndicator();
+                                addMessage("That's wonderful! Practicing gratitude regularly can significantly improve your mental wellbeing. Would you like to try another exercise?", 'bot');
+                            }, 1500);
+                        }, 500);
+                    }
+                }
+                
+                
+                if (e.target.id === 'saveReframe') {
+                    const negative = document.getElementById('negativeThought').value;
+                    const positive = document.getElementById('positiveReframe').value;
+                    
+                    if (negative.trim() !== '' && positive.trim() !== '') {
+                        addMessage(`I reframed my thought from "${negative}" to "${positive}"`, 'user');
+                        
+                        setTimeout(() => {
+                            showTypingIndicator();
+                            
+                            setTimeout(() => {
+                                removeTypingIndicator();
+                                addMessage("Great job reframing your thought! This cognitive exercise helps build healthier thinking patterns. Would you like to work on another thought?", 'bot');
+                            }, 1500);
+                        }, 500);
+                    }
+                }
+                
+                // Memory game
+                if (e.target.id === 'startMemoryGame') {
+                    startMemoryGame();
+                }
+                
+                if (e.target.id === 'repeatSequence') {
+                    showMemorySequence();
+                }
+            });
+            
+        
+            function startBreathingExercise() {
+                const timer = document.getElementById('breathTimer');
+                const button = document.getElementById('startBreathing');
+                
+                button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> In Progress';
+                button.disabled = true;
+                
+                let cycles = 3;
+                let step = 0; // 0=inhale, 1=hold, 2=exhale
+                let count = 4;
+                
+                const breathingStages = [
+                    { text: "Breathe IN", duration: 4 },
+                    { text: "Hold", duration: 7 },
+                    { text: "Breathe OUT", duration: 8 }
+                ];
+                
+                timer.textContent = breathingStages[step].text + " (" + count + ")";
+                
+                const interval = setInterval(() => {
+                    count--;
+                    
+                    if (count <= 0) {
+                        step++;
+                        if (step > 2) {
+                            step = 0;
+                            cycles--;
+                            if (cycles <= 0) {
+                                clearInterval(interval);
+                                timer.textContent = "Exercise Complete!";
+                                button.innerHTML = '<i class="fas fa-check"></i> Completed';
+                                setTimeout(() => {
+                                    button.innerHTML = '<i class="fas fa-redo"></i> Try Again';
+                                    button.disabled = false;
+                                }, 3000);
+                                return;
+                            }
+                        }
+                        count = breathingStages[step].duration;
+                    }
+                    
+                    timer.textContent = breathingStages[step].text + " (" + count + ")";
+                }, 1000);
+            }
+            
+            // Meditation exercise function
+            function startMeditationExercise() {
+                const timer = document.getElementById('meditationTimer');
+                const button = document.getElementById('startMeditation');
+                
+                button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Meditating';
+                button.disabled = true;
+                
+                let minutes = 5;
+                let seconds = 0;
+                
+                timer.textContent = minutes + ":" + (seconds < 10 ? "0" + seconds : seconds);
+                
+                const interval = setInterval(() => {
+                    seconds--;
+                    
+                    if (seconds < 0) {
+                        minutes--;
+                        seconds = 59;
+                    }
+                    
+                    if (minutes < 0) {
+                        clearInterval(interval);
+                        timer.textContent = "Complete!";
+                        button.innerHTML = '<i class="fas fa-check"></i> Finished';
+                        setTimeout(() => {
+                            button.innerHTML = '<i class="fas fa-redo"></i> Start Again';
+                            button.disabled = false;
+                        }, 3000);
+                        return;
+                    }
+                    
+                    timer.textContent = minutes + ":" + (seconds < 10 ? "0" + seconds : seconds);
+                }, 1000);
+            }
+            
+            // Memory game function
+            let memorySequence = [];
+            let userSequence = [];
+            let memoryGameActive = false;
+            
+            function startMemoryGame() {
+                memorySequence = [];
+                userSequence = [];
+                memoryGameActive = true;
+                
+                document.getElementById('startMemoryGame').style.display = 'none';
+                document.getElementById('repeatSequence').style.display = 'inline-block';
+                document.getElementById('gameMessage').textContent = '';
+                
+                addToMemorySequence();
+            }
+            
+            function addToMemorySequence() {
+                const colors = ['🔴', '🟢', '🔵', '🟡', '🟣', '🟠'];
+                const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                memorySequence.push(randomColor);
+                
+                showMemorySequence();
+            }
+            
+            function showMemorySequence() {
+                const sequenceContainer = document.getElementById('memorySequence');
+                sequenceContainer.innerHTML = '';
+                document.getElementById('gameMessage').textContent = 'Watch the sequence...';
+                
+                // Show sequence with delay between items
+                memorySequence.forEach((color, index) => {
+                    setTimeout(() => {
+                        sequenceContainer.innerHTML += `<div style="font-size: 24px;">${color}</div>`;
+                        
+                        if (index === memorySequence.length - 1) {
+                            setTimeout(() => {
+                                sequenceContainer.innerHTML = '';
+                                document.getElementById('gameMessage').textContent = 'Your turn! Repeat the sequence by clicking the colors below:';
+                                createMemoryGameInput();
+                            }, 1000);
+                        }
+                    }, index * 800);
+                });
+            }
+            
+            function createMemoryGameInput() {
+                const sequenceContainer = document.getElementById('memorySequence');
+                sequenceContainer.innerHTML = '';
+                
+                const colors = ['🔴', '🟢', '🔵', '🟡', '🟣', '🟠'];
+                
+                colors.forEach(color => {
+                    const colorElement = document.createElement('div');
+                    colorElement.style.fontSize = '24px';
+                    colorElement.style.cursor = 'pointer';
+                    colorElement.textContent = color;
+                    
+                    colorElement.addEventListener('click', function() {
+                        if (!memoryGameActive) return;
+                        
+                        userSequence.push(color);
+                        colorElement.style.transform = 'scale(1.2)';
+                        setTimeout(() => {
+                            colorElement.style.transform = 'scale(1)';
+                        }, 300);
+                        
+                        checkMemorySequence();
+                    });
+                    
+                    sequenceContainer.appendChild(colorElement);
+                });
+            }
+            
+            function checkMemorySequence() {
+                for (let i = 0; i < userSequence.length; i++) {
+                    if (userSequence[i] !== memorySequence[i]) {
+                        
+                        memoryGameActive = false;
+                        document.getElementById('gameMessage').textContent = `Game over! Your score: ${memorySequence.length - 1}`;
+                        document.getElementById('startMemoryGame').style.display = 'inline-block';
+                        document.getElementById('repeatSequence').style.display = 'none';
+                        return;
+                    }
+                }
+                
+                if (userSequence.length === memorySequence.length) {
+            
+                    document.getElementById('gameMessage').textContent = 'Correct! Adding another color...';
+                    userSequence = [];
+                    setTimeout(() => {
+                        addToMemorySequence();
+                    }, 1500);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
