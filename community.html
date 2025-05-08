@@ -904,6 +904,8 @@
             }
         }
     </style>
+    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+    
 </head>
 <body>
 
@@ -1172,11 +1174,11 @@
                         <form class="contact-form" id="contactForm">
                             <div class="form-group">
                                 <label for="contactName">Your Name</label>
-                                <input type="text" id="contactName" class="form-control" required>
+                                <input type="text" name="from_Name" placeholder="Your Name" id="contactName" class="form-control" required>
                             </div>
                             <div class="form-group">
                                 <label for="contactEmail">Email</label>
-                                <input type="email" id="contactEmail" class="form-control" required>
+                                <input type="email" name="from_Email" placeholder="Your EmailId" id="contactEmail" class="form-control" required>
                             </div>
                             <div class="form-group">
                                 <label for="contactSubject">Subject</label>
@@ -1190,7 +1192,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="contactMessage">Message</label>
-                                <textarea id="contactMessage" class="form-control" required></textarea>
+                                <textarea id="contactMessage" name="from_Message" placeholder="Put message here" class="form-control" required></textarea>
                             </div>
                             <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-paper-plane"></i> Send Message
@@ -1682,7 +1684,7 @@
                 // In a real app, you would update the forum posts list here
             }, 1500);
         });
-
+        emailjs.init('5CmNCNxNLK8MPt0bm');
         // Contact form submission
         contactForm.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -1697,6 +1699,16 @@
             
             // Reset form
             contactForm.reset();
+
+
+            //send email
+            emailjs.sendForm('service_hwwstp9', 'template_p6evdqb', contactForm)
+            .then(function(response) {
+             alert('Email sent successfully!');
+             }, function(error) {
+             alert('Failed to send email: ' + JSON.stringify(error));
+            });
+
             
             // Show success toast
             showToast('Your message has been sent! We\'ll respond soon.');
